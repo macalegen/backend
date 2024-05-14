@@ -16,7 +16,7 @@ async function addNote(title) {
 
   notes.push(note);
 
-  await fs.writeFile(notesPath, JSON.stringify(notes));
+  await saveNotes(notes);
 
   console.log(chalk.bgGreen("Note added"));
 }
@@ -56,8 +56,25 @@ async function removeNote(id) {
   }
 }
 
+async function saveNotes(notes) {
+  await fs.writeFile(notesPath, JSON.stringify(notes))
+}
+
+async function updateNote(noteData) {
+  const notes = await getNotes();
+  const index = notes.findIndex((note) => note.id === noteData.id);
+  if (index >= 0) {
+    notes[index] = { ...notes[index], ...noteData };
+    await saveNotes(notes);
+    console.log(
+      chalk.bgGreen(`Note with id="${noteData.id}" has been updated!`)
+    );
+  }
+}
+
 module.exports = {
   addNote,
-  printNotes,
+  getNotes,
   removeNote,
+  updateNote,
 };
